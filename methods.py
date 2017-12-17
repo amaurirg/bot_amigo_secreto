@@ -35,9 +35,12 @@ class BotFalar:
             if self.last_index['message'].get('text'):
                 self.message_text = True
                 self.text = self.last_index['message']['text']
-            if self.last_index['message'].get('sticker'):
+            elif self.last_index['message'].get('sticker'):
                 self.message_text = False
                 self.sticker_id = self.last_index['message']['sticker']['file_id']
+            else:
+                self.send_message("Só é permitido enviar texto e stickers.")
+                self.get_updates(offset = self.last_update_id + 1, timeout = 30)
             if 'username' in self.chat:
                 self.username = self.chat['username']
             else:
@@ -99,7 +102,9 @@ class BotFalar:
                 self.send_message("{} foi deletado do grupo.".format(del_name))
             elif self.text.startswith("/list"):
                 self.names_list = ["{}".format(i) for i in self.get_names()]
+                print(self.names_list)
                 self.message_list = "\n".join(self.names_list)
+                print(self.message_list)
                 self.send_message("Participantes do amigo secreto\n\n{}".format(self.message_list))
             elif self.text.startswith("/sorteio"):
                 self.sorteio()
