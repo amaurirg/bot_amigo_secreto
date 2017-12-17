@@ -102,9 +102,7 @@ class BotFalar:
                 self.send_message("{} foi deletado do grupo.".format(del_name))
             elif self.text.startswith("/list"):
                 self.names_list = ["{}".format(i) for i in self.get_names()]
-                print(self.names_list)
                 self.message_list = "\n".join(self.names_list)
-                print(self.message_list)
                 self.send_message("Participantes do amigo secreto\n\n{}".format(self.message_list))
             elif self.text.startswith("/sorteio"):
                 self.sorteio()
