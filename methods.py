@@ -89,8 +89,7 @@ class BotFalar:
 
     def message_to_all(self, text_all):
         for amigo in self.get_friends():
-            self.friend_message(amigo[1], "Esse bot será desativado esta madrugada para não ficar fazendo requisições"
-                                          " aos servidores do Telegram. Amanhã pela manhã será reativado.")
+            self.friend_message(amigo[1], text_all)
 
     def handle_updates(self):
         self.names = self.get_names()
