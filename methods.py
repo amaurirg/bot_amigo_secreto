@@ -90,6 +90,8 @@ class BotFalar:
     def handle_updates(self):
         self.names = self.get_names()
         if self.message_text:
+            if self.text.startswith("/start"):
+                self.send_message("Olá, sou o Bot do Amigo Secreto.")
             if self.text.startswith("/entrar"):
                 if self.first_name in self.get_names():
                     self.send_message("Você já está participando do grupo do amigo secreto {}".format(self.first_name))
