@@ -87,6 +87,11 @@ class BotFalar:
                                                  "Seu amigo secreto é {}".format(id_amigo[1]))
 
 
+    def todos(self):
+        for amigo in self.get_friends():
+            self.friend_message(amigo[1], "Esse bot será desativado esta madrugada para não ficar fazendo requisições"
+                                          " aos servidores do Telegram. Amanhã pela manhã será reativado.")
+
     def handle_updates(self):
         self.names = self.get_names()
         if self.message_text:
@@ -109,6 +114,8 @@ class BotFalar:
                 self.send_message("Participantes do amigo secreto\n\n{}".format(self.message_list))
             # elif self.text.startswith("/sorteio"):
             #     self.sorteio()
+            elif self.text.startswith("/todos"):
+                self.todos()
             else:
                 self.friend_message(self.id_friend()[0], self.text)
         elif self.sticker_id:
