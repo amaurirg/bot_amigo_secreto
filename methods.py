@@ -92,22 +92,23 @@ class BotFalar:
         if self.message_text:
             if self.text.startswith("/start"):
                 self.send_message("Olá {}, sou o Bot do Amigo Secreto.".format(self.first_name))
+                self.get_updates(offset=self.last_update_id + 1, timeout=30)
             if self.text.startswith("/entrar"):
                 if self.first_name in self.get_names():
                     self.send_message("Você já está participando do grupo do amigo secreto {}".format(self.first_name))
                 else:
                     self.add_name()
                     self.send_message("{}, seu nome foi adicionado ao grupo do amigo secreto.".format(self.first_name))
-            elif self.text.startswith("/del"):
-                del_name = self.text[5:]
-                self.delete_name(del_name)
-                self.send_message("{} foi deletado do grupo.".format(del_name))
+            # elif self.text.startswith("/del"):
+            #     del_name = self.text[5:]
+            #     self.delete_name(del_name)
+            #     self.send_message("{} foi deletado do grupo.".format(del_name))
             elif self.text.startswith("/list"):
                 self.names_list = ["{}".format(i) for i in self.get_names()]
                 self.message_list = "\n".join(self.names_list)
                 self.send_message("Participantes do amigo secreto\n\n{}".format(self.message_list))
-            elif self.text.startswith("/sorteio"):
-                self.sorteio()
+            # elif self.text.startswith("/sorteio"):
+            #     self.sorteio()
             else:
                 self.friend_message(self.id_friend()[0], self.text)
         elif self.sticker_id:
