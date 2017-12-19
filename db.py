@@ -56,6 +56,13 @@ class DbBot(BotFalar):
         args = (self.chat_id,)
         return [base64.b64decode(x[0]).decode('utf-8') for x in self.conn.execute(stmt, args)]
 
+    def id_of_name(self, id_friend):
+        enc_id_friend = base64.b64encode(str(id_friend).encode('utf-8'))
+        dec_id_friend = enc_id_friend.decode('utf-8')
+        stmt = "SELECT chat_id FROM friends WHERE id_friend = (?)"
+        args = (dec_id_friend,)
+        return [x[0] for x in self.conn.execute(stmt, args)]
+
     def friends(self):
         stmt = "SELECT chat_id, secret_friend FROM friends"
         return [[x[0], base64.b64decode(x[1]).decode('utf-8')] for x in self.conn.execute(stmt)]

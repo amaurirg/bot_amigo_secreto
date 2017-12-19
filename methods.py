@@ -60,6 +60,12 @@ class BotFalar:
         else:
             post("{}chat_id={}&sticker={}".format(URL_SEND_STICKER, chat_id, message))
 
+    def resp_msg_to_friend(self, chat_id, message):
+        if self.message_text:
+            post("{}chat_id={}&text={}".format(URL_SEND_MESSAGE, chat_id, message))
+        else:
+            post("{}chat_id={}&sticker={}".format(URL_SEND_STICKER, chat_id, message))
+
     def sorteio(self):
         self.nomes = self.get_names()
         sorteio = self.nomes[:]
@@ -103,24 +109,27 @@ class BotFalar:
                 else:
                     self.add_name()
                     self.send_message("{}, seu nome foi adicionado ao grupo do amigo secreto.".format(self.first_name))
-            # elif self.text.startswith("/del"):
-            #     del_name = self.text[5:]
-            #     self.delete_name(del_name)
-            #     self.send_message("{} foi deletado do grupo.".format(del_name))
+            elif self.text.startswith("/del"):
+                del_name = self.text[5:]
+                self.delete_name(del_name)
+                self.send_message("{} foi deletado do grupo.".format(del_name))
             elif self.text.startswith("/list"):
                 self.names_list = ["{}".format(i) for i in self.get_names()]
                 self.message_list = "\n".join(self.names_list)
                 self.send_message("Participantes do amigo secreto\n\n{}".format(self.message_list))
-            # elif self.text.startswith("/sorteio"):
-            #     self.sorteio()
+            elif self.text.startswith("/sorteio"):
+                self.sorteio()
             elif self.text.startswith("/all"):
                 self.message_to_all(self.text[5:])
             elif self.text.startswith("/r") or self.text.startswith("/R"):
-                self.send_message(self.text[3:])
+                id_name = self.id_of_name(self.chat_id)
+                self.resp_msg_to_friend(id_name[0], self.text[3:])
             else:
-                self.friend_message(self.id_friend()[0], self.text)
+                id_friend = self.id_friend()
+                self.friend_message(id_friend[0], self.text)
         elif self.sticker_id:
-            self.friend_message(self.id_friend()[0], self.sticker_id)
+            id_friend = self.id_friend()
+            self.friend_message(id_friend[0], self.sticker_id)
         else:
             pass
 
