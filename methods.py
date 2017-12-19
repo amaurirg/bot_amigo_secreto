@@ -115,7 +115,7 @@ class BotFalar:
             #     self.sorteio()
             elif self.text.startswith("/all"):
                 self.message_to_all(self.text[5:])
-            elif self.text.startswith("/r"):
+            elif self.text.startswith("/r") or self.text.startswith("/R"):
                 self.send_message(self.text[3:])
             else:
                 self.friend_message(self.id_friend()[0], self.text)
