@@ -80,7 +80,7 @@ class BotFalar:
                 's3.portalt5.com.br/imagens/amigo-secreto.png'
 
         self.send_message("Chegou a hora do ...")
-        post(f'{URL_SEND_PHOTO}chat_id=200598266&photo={photo}')
+        post("{}chat_id=200598266&photo={}".format(URL_SEND_PHOTO, photo))
 
     def choose_who_to_start(self):
         self.send_message("E quem começa a brincadeira é ...")
