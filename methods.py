@@ -1,3 +1,5 @@
+from time import sleep
+
 from requests import get, post
 from decouple import config
 import json
@@ -10,9 +12,12 @@ URL_BASE = "https://api.telegram.org/bot{}".format(TOKEN)
 URL_UPDATES = "{}/getUpdates".format(URL_BASE)
 URL_SEND_MESSAGE = "{}/sendMessage?".format(URL_BASE)
 URL_SEND_STICKER = "{}/sendSticker?".format(URL_BASE)
+URL_SEND_PHOTO = "{}/sendPhoto?".format(URL_BASE)
 # URL_WEBHOOK = "https://"
 # URL_SET_WEBHOOK = "https://api.telegram.org/bot{}/setWebhook?url={}".format(TOKEN, URL_WEBHOOK)
 # URL_GET_WEBHOOK_INFO = "{}/bot{}/getWebhookInfo".format(URL_WEBHOOK, TOKEN)
+START = 'Começar Amigo Secreto'
+CHOOSE = 'Sortear quem começa'
 
 
 class BotFalar:
@@ -36,7 +41,7 @@ class BotFalar:
                 self.message_text = True
                 self.text = self.last_index['message']['text']
             elif self.last_index['message'].get('sticker'):
-                self.message_text = False
+                self.message_sticker = True
                 self.sticker_id = self.last_index['message']['sticker']['file_id']
             else:
                 self.send_message("Só é permitido enviar texto e stickers.")
@@ -57,7 +62,7 @@ class BotFalar:
     def friend_message(self, chat_id, message):
         if self.message_text:
             post("{}chat_id={}&text={}".format(URL_SEND_MESSAGE, chat_id, message))
-        else:
+        elif self.message_sticker:
             post("{}chat_id={}&sticker={}".format(URL_SEND_STICKER, chat_id, message))
 
     def resp_msg_to_friend(self, chat_id, message):
@@ -65,6 +70,23 @@ class BotFalar:
             post("{}chat_id={}&text={}".format(URL_SEND_MESSAGE, chat_id, message))
         else:
             post("{}chat_id={}&sticker={}".format(URL_SEND_STICKER, chat_id, message))
+
+    def message_to_all(self, text_all):
+        for amigo in self.get_friends():
+            self.friend_message(amigo[1], text_all)
+
+    def start_secret_friend(self):
+        photo = 'https://imgcdn.portalt5.com.br/6EsuDA5canHPt6OGXBDzdRlyBZE=/400x266/smart/filters:strip_icc()/' \
+                's3.portalt5.com.br/imagens/amigo-secreto.png'
+
+        self.send_message("Chegou a hora do ...")
+        post(f'{URL_SEND_PHOTO}chat_id=200598266&photo={photo}')
+
+    def choose_who_to_start(self):
+        self.send_message("E quem começa a brincadeira é ...")
+        names = self.get_names()
+        sleep(5)
+        self.send_message("{}".format(random.choice(names)))
 
     def sorteio(self):
         self.nomes = self.get_names()
@@ -93,12 +115,8 @@ class BotFalar:
                                                  "Seu amigo secreto é {}".format(id_amigo[1]))
 
 
-    def message_to_all(self, text_all):
-        for amigo in self.get_friends():
-            self.friend_message(amigo[1], text_all)
-
     def handle_updates(self):
-        self.names = self.get_names()
+        # self.names = self.get_names()
         if self.message_text:
             if self.text.startswith("/start"):
                 self.send_message("Olá {}, sou o Bot do Amigo Secreto.".format(self.first_name))
@@ -124,6 +142,13 @@ class BotFalar:
             elif self.text.startswith("/r") or self.text.startswith("/R"):
                 id_name = self.id_of_name(self.chat_id)
                 self.resp_msg_to_friend(id_name[0], self.text[3:])
+            elif self.text.startswith("/t") and self.chat_id == 200598266:
+                self.keyboard = self.build_keyboard([START, CHOOSE])
+                self.send_message("Escolha", self.keyboard)
+            elif self.text.startswith(START):
+                self.start_secret_friend()
+            elif self.text.startswith(CHOOSE):
+                self.choose_who_to_start()
             else:
                 id_friend = self.id_friend()
                 self.friend_message(id_friend[0], self.text)
@@ -136,7 +161,7 @@ class BotFalar:
 
     def build_keyboard(self, items):
         keyboard = [[item] for item in items]
-        reply_markup = {"keyboard": keyboard, "one_time_keyboard": True}
+        reply_markup = {'keyboard': keyboard, "one_time_keyboard": True}
         return json.dumps(reply_markup)
 
 
